@@ -2,21 +2,28 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db, User, Student, SupportCase
 import csv
-
 import os
+from urllib.parse import quote_plus
 from dotenv import load_dotenv
 
 load_dotenv()
 
-
 app = Flask(__name__)
 
-app.config["SECRET_KEY"] = "124"
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:1234@localhost/student_support_db"
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "change_this_secret_key")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db.init_app(app)
+DB_USER = os.getenv("MYSQLUSER", "root")
+DB_PASSWORD = quote_plus(os.getenv("MYSQLPASSWORD", "1234"))
+DB_HOST = os.getenv("MYSQLHOST", "localhost")
+DB_PORT = os.getenv("MYSQLPORT", "3306")
+DB_NAME = os.getenv("MYSQLDATABASE", "student_support_db")
 
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)
+
+db.init_app(app)
 
 def parse_grade(value):
     if value is None or str(value).strip() == "":
