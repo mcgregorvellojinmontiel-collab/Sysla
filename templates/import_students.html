@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="form-card">
+    <h2>Importar estudiantes desde archivo CSV</h2>
+
+    <p>
+        Sube un archivo CSV con la informacion de los estudiantes.
+    </p>
+
+    <div class="case-summary">
+        <p><strong>Required columns:</strong></p>
+        <p>
+            student_code, full_name, semester, group_name, class_code, grade_1, grade_2, grade_3
+        </p>
+
+        <p>
+            Empty grades are allowed. Example: if only Score 1 is 2.0, the final average will be 2.0.
+        </p>
+    </div>
+
+    <a href="{{ url_for('download_students_template') }}" class="btn-link">
+        Descargar plantilla CSV
+    </a>
+
+    <form method="POST" enctype="multipart/form-data" class="import-form">
+        <label>Select CSV File</label>
+        <input type="file" name="csv_file" accept=".csv" required>
+
+        <button type="submit">Importar estudiantes</button>
+    </form>
+</section>
+{% endblock %}

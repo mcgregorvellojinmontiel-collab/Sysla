@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="table-section">
+    <div class="section-header">
+        <div>
+            <h2>Usuarios</h2>
+            <p>Listado de profesores y monitores registrados en el sistema.</p>
+        </div>
+    </div>
+
+    <input type="text" id="userSearchInput" placeholder="Buscar usuario..." class="search-input">
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Rol</th>
+            </tr>
+        </thead>
+
+        <tbody id="usersTable">
+            {% for user in users %}
+            <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    {% if user.role == "teacher" %}
+                        <span class="badge success">Profesor</span>
+                    {% elif user.role == "monitor" %}
+                        <span class="badge warning">Monitor</span>
+                    {% else %}
+                        {{ user.role }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" class="empty-row">No hay usuarios registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

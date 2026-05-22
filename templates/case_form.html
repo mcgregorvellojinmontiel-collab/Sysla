@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="form-card">
+    <h2>Crear caso</h2>
+
+    <div class="case-summary">
+        <p>
+            <strong>Estudiante:</strong> {{ student.full_name }}<br>
+            <strong>Codigo de estudiante:</strong> {{ student.student_code }}<br>
+            <strong>Semestre:</strong> {{ student.semester or "Unassigned" }}<br>
+            <strong>Curso:</strong> {{ student.group_name }}<br>
+            <strong>Codigo de clase:</strong> {{ student.class_code }}<br>
+            <strong>Promedio:</strong> {{ student.average }}<br>
+            <strong>Estado academico:</strong>
+
+            {% if student.grade_1 is none and student.grade_2 is none and student.grade_3 is none %}
+                <span class="badge warning">No Scores Registered</span>
+            {% elif student.needs_support %}
+                <span class="badge danger">Needs Support</span>
+            {% else %}
+                <span class="badge success">Good Standing</span>
+            {% endif %}
+        </p>
+    </div>
+
+    <form method="POST" id="caseForm">
+        <label>Tema o clase</label>
+        <input 
+            type="text" 
+            name="subject" 
+            value="{{ student.class_code }}" 
+            required
+        >
+
+        <label>Razon por el caso</label>
+        <textarea 
+            name="reason" 
+            rows="5" 
+            placeholder="Escribe la razon para este caso."
+            required
+        ></textarea>
+
+        <label>Nivel de urgencia</label>
+        <select name="urgency_level" required>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+            <option value="Alta">Alta</option>
+            <option value="Crítica">Crítica</option>
+        </select>
+
+        <label>Tipo de apoyo</label>
+        <select name="support_type" required>
+            <option value="Monitoría">Monitoría</option>
+            <option value="Tutoría">Tutoría</option>
+        </select>
+
+        <label>Asignar monitor</label>
+        <select name="monitor_id">
+            <option value="">Sin asignar</option>
+
+            {% for monitor in monitors %}
+                <option value="{{ monitor.id }}">
+                    {{ monitor.name }} - {{ monitor.email }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label>Notas extras</label>
+        <textarea 
+            name="teacher_notes" 
+            rows="4" 
+            placeholder="Notas opcionales para el monitor."
+        ></textarea>
+
+        <div class="form-actions">
+            <button type="submit">Guardar caso de soporte</button>
+
+            <a href="{{ url_for('students') }}" class="btn-cancel">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</section>
+{% endblock %}

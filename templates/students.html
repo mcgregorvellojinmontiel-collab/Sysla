@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="table-section">
+    <div class="section-header">
+        <div>
+            <h2>Estudiantes</h2>
+            <p>Consulta estudiantes por nombre, clase, semestre o estado académico.</p>
+        </div>
+
+        {% if session.get("role") in ["teacher", "monitor"] %}
+            <div class="header-actions">
+                <a class="btn-link" href="{{ url_for('import_students') }}">Importar CSV</a>
+                <a class="btn-link" href="{{ url_for('create_student') }}">Registrar estudiante</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="filters-grid">
+        <div>
+            <label>Buscar estudiante</label>
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Buscar por nombre, código, grupo..." 
+                class="search-input"
+            >
+        </div>
+
+        <div>
+            <label>Filtrar por código de clase</label>
+            <select id="classFilter" class="search-input">
+                <option value="">Todas las clases</option>
+
+                {% set class_codes = [] %}
+                {% for student in students %}
+                    {% if student.class_code and student.class_code not in class_codes %}
+                        {% set _ = class_codes.append(student.class_code) %}
+                        <option value="{{ student.class_code }}">{{ student.class_code }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label>Filtrar por semestre</label>
+            <select id="semesterFilter" class="search-input">
+                <option value="">Todos los semestres</option>
+                <option value="Unassigned">Sin asignar</option>
+                <option value="1st Semester">1 Semestre</option>
+                <option value="2nd Semester">2 Semestre</option>
+                <option value="3rd Semester">3 Semestre</option>
+                <option value="4th Semester">4 Semestre</option>
+                <option value="5th Semester">5 Semestre</option>
+                <option value="6th Semester">6 Semestre</option>
+                <option value="7th Semester">7 Semestre</option>
+                <option value="8th Semester">8 Semestre</option>
+                <option value="9th Semester">9 Semestre</option>
+                <option value="10th Semester">10 Semestre</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Filtrar por estado</label>
+            <select id="statusFilter" class="search-input">
+                <option value="">Todos los estados</option>
+                <option value="Requiere apoyo">Requiere apoyo</option>
+                <option value="Buen estado">Buen estado</option>
+                <option value="Sin notas">Sin notas</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="filter-actions">
+        <button type="button" id="clearFiltersBtn" class="btn-filter-clear">
+            Limpiar filtros
+        </button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Código estudiante</th>
+                <th>Nombre completo</th>
+                <th>Semestre</th>
+                <th>Grupo</th>
+                <th>Código clase</th>
+                <th>Nombre clase</th>
+                <th>Nivel final</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody id="studentsTable">
+            {% for student in students %}
+            <tr
+                data-class="{{ student.class_code }}"
+                data-semester="{{ student.semester or 'Sin asignar' }}"
+                data-status="{% if student.final_level == 'Sin notas' or (student.grade_1 is none and student.grade_2 is none and student.grade_3 is none) %}Sin notas{% elif student.needs_support %}Requiere apoyo{% else %}Buen estado{% endif %}"
+            >
+                <td>{{ student.student_code }}</td>
+                <td>{{ student.full_name }}</td>
+                <td>{{ student.semester or "Sin asignar" }}</td>
+                <td>{{ student.group_name }}</td>
+                <td>{{ student.class_code }}</td>
+
+                <td>
+                    {% if student.class_name %}
+                        {{ student.class_name }}
+                    {% else %}
+                        Sin nombre
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if student.final_level %}
+                        {{ student.final_level }}
+                    {% else %}
+                        Sin notas
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if student.final_level == "Sin notas" or (student.grade_1 is none and student.grade_2 is none and student.grade_3 is none) %}
+                        <span class="badge warning">Sin notas</span>
+                    {% elif student.needs_support %}
+                        <span class="badge danger">Requiere apoyo</span>
+                    {% else %}
+                        <span class="badge success">Buen estado</span>
+                    {% endif %}
+                </td>
+
+                <td class="actions-cell">
+                    {% if session.get("role") in ["teacher", "monitor"] %}
+                        <a class="btn-small" href="{{ url_for('edit_student', student_id=student.id) }}">
+                            Editar
+                        </a>
+
+                        <a class="btn-small secondary" href="{{ url_for('create_case', student_id=student.id) }}">
+                            Crear caso
+                        </a>
+
+                        <form 
+                            method="POST" 
+                            action="{{ url_for('delete_student', student_id=student.id) }}" 
+                            class="inline-form"
+                            onsubmit="return confirm('¿Seguro que deseas eliminar este estudiante?');"
+                        >
+                            <button type="submit" class="btn-small danger-button">
+                                Eliminar
+                            </button>
+                        </form>
+                    {% else %}
+                        <span class="muted">Sin acción</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="9" class="empty-row">
+                    No hay estudiantes registrados.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

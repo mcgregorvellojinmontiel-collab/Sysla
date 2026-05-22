@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sysla</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='css/uclogo.png') }}">
+    
+</head>
+<body class="role-{{ session.get('role') if session.get('role') else 'guest' }}">
+
+<header class="topbar">
+    <div class="brand">
+        <img 
+            class="loracle" 
+            src="{{ url_for('static', filename='css/uclogo.png') }}" 
+            alt="icono"
+        >
+
+        <h1>Sysla</h1>
+    </div>
+
+    {% if session.get("user_id") %}
+        <nav>
+        <a href="{{ url_for('dashboard') }}" class="home-icon-link" title="Inicio" aria-label="Inicio">
+            <img 
+                src="{{ url_for('static', filename='css/home.png') }}" 
+                alt="Inicio" 
+                class="home-icon"
+            >
+        </a>
+
+        {% if session.get("role") == "teacher" %}
+            <a href="{{ url_for('students') }}">Estudiantes</a>
+            <a href="{{ url_for('classes') }}">Clases</a>
+            <a href="{{ url_for('cases') }}">Casos</a>
+        {% endif %}
+
+        {% if session.get("role") == "monitor" %}
+            <a href="{{ url_for('students') }}">Estudiantes</a>
+            <a href="{{ url_for('classes') }}">Clases</a>
+            <a href="{{ url_for('cases') }}">Casos</a>
+        {% endif %}
+
+        {% if session.get("role") == "admin" %}
+            <a href="{{ url_for('students') }}">Estudiantes</a>
+            <a href="{{ url_for('cases') }}">Casos</a>
+        {% endif %}
+
+        <a href="{{ url_for('logout') }}">Cerrar sesion</a>
+    </nav>
+    {% endif %}
+</header>
+
+<main class="container 
+    {% if request.endpoint in ['login', 'register', 'forgot_password'] %}auth-container{% endif %}
+    {% if request.endpoint == 'cases' %}cases-container{% endif %}
+">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

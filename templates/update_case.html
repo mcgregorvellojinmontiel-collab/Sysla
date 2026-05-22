@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="form-card">
+    {% if session.get("role") == "monitor" %}
+        <h2>Actualizar caso</h2>
+        <p>Agenda la cita, registra la razón y actualiza el progreso del estudiante.</p>
+    {% else %}
+        <h2>Revisar caso</h2>
+        <p>Consulta la información del caso y el seguimiento realizado por el monitor.</p>
+    {% endif %}
+
+    <div class="case-summary">
+        <p><strong>Estudiante:</strong> {{ case.student.full_name }}</p>
+        <p><strong>Código estudiante:</strong> {{ case.student.student_code }}</p>
+        <p><strong>Semestre:</strong> {{ case.student.semester or "Sin asignar" }}</p>
+        <p><strong>Grupo:</strong> {{ case.student.group_name }}</p>
+        <p><strong>Código de clase:</strong> {{ case.student.class_code }}</p>
+        <p><strong>Clase / Asignatura:</strong> {{ case.subject }}</p>
+
+        <p>
+            <strong>Promedio:</strong>
+            {% if case.grade is not none %}
+                {{ case.grade }}
+            {% else %}
+                Sin nota
+            {% endif %}
+        </p>
+
+        <p><strong>Tipo de apoyo:</strong> {{ case.support_type or "Monitoría" }}</p>
+
+        <p>
+            <strong>Nivel de urgencia:</strong>
+            {% if case.urgency_level == "Crítica" %}
+                <span class="badge danger">Crítica</span>
+            {% elif case.urgency_level == "Alta" %}
+                <span class="badge danger">Alta</span>
+            {% elif case.urgency_level == "Media" %}
+                <span class="badge warning">Media</span>
+            {% else %}
+                <span class="badge success">Baja</span>
+            {% endif %}
+        </p>
+
+        <p><strong>Razón del caso:</strong> {{ case.reason }}</p>
+
+        <p>
+            <strong>Notas del profesor:</strong>
+            {% if case.teacher_notes %}
+                {{ case.teacher_notes }}
+            {% else %}
+                Sin notas del profesor
+            {% endif %}
+        </p>
+
+        <p>
+            <strong>Monitor asignado:</strong>
+            {% if case.monitor %}
+                {{ case.monitor.name }}
+            {% else %}
+                Sin asignar
+            {% endif %}
+        </p>
+    </div>
+
+    <form method="POST" id="updateCaseForm">
+        <label>Fecha de la cita</label>
+        <input 
+            type="date" 
+            name="support_date" 
+            id="support_date"
+            value="{{ case.support_date if case.support_date else '' }}"
+            {% if session.get("role") == "teacher" %}disabled{% endif %}
+        >
+
+        <label>Hora de la cita</label>
+        <input 
+            type="time" 
+            name="support_time" 
+            id="support_time"
+            value="{{ case.support_time if case.support_time else '' }}"
+            {% if session.get("role") == "teacher" %}disabled{% endif %}
+        >
+
+        <label>Estado del caso</label>
+        <select 
+            name="status" 
+            id="status" 
+            required
+            {% if session.get("role") == "teacher" %}disabled{% endif %}
+        >
+            <option value="pending" {% if case.status == "pending" %}selected{% endif %}>
+                Pendiente
+            </option>
+
+            <option value="assigned" {% if case.status == "assigned" %}selected{% endif %}>
+                Asignado
+            </option>
+
+            <option value="scheduled" {% if case.status == "scheduled" %}selected{% endif %}>
+                Agendado
+            </option>
+
+            <option value="in_progress" {% if case.status == "in_progress" %}selected{% endif %}>
+                En progreso
+            </option>
+
+            <option value="completed" {% if case.status == "completed" %}selected{% endif %}>
+                Completado
+            </option>
+
+            <option value="cancelled" {% if case.status == "cancelled" %}selected{% endif %}>
+                Cancelado
+            </option>
+        </select>
+
+        <label>Razón por la cita</label>
+        <textarea 
+            name="appointment_reason" 
+            rows="4" 
+            placeholder="Explica por qué se agenda la cita con el estudiante."
+            {% if session.get("role") == "teacher" %}disabled{% endif %}
+        >{{ case.appointment_reason or "" }}</textarea>
+
+        <label>Notas del monitor</label>
+        <textarea 
+            name="monitor_notes" 
+            rows="4"
+            placeholder="Escribe observaciones generales de la atención."
+            {% if session.get("role") == "teacher" %}disabled{% endif %}
+        >{{ case.monitor_notes or "" }}</textarea>
+
+        <label>Actualización de progreso</label>
+        <textarea 
+            name="progress_update" 
+            rows="5" 
+            placeholder="Describe el avance del estudiante, temas trabajados o recomendaciones."
+            {% if session.get("role") == "teacher" %}disabled{% endif %}
+        >{{ case.progress_update or "" }}</textarea>
+
+        <div class="form-actions">
+            {% if session.get("role") == "monitor" %}
+                <button type="submit">Guardar cambios</button>
+            {% endif %}
+
+            <a href="{{ url_for('cases') }}" class="btn-cancel">
+                Volver
+            </a>
+        </div>
+    </form>
+</section>
+{% endblock %}

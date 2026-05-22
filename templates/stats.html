@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="dashboard-header">
+        <div>
+            <h2>Resumen del sistema</h2>
+            <p>Datos generales sobre estudiantes, casos y seguimiento académico.</p>
+        </div>
+
+        <a href="{{ url_for('dashboard') }}" class="btn-cancel">
+            Volver
+        </a>
+    </div>
+
+    {% if role == "teacher" %}
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h3>Total estudiantes</h3>
+                <p>{{ total_students }}</p>
+                <span>Estudiantes registrados</span>
+            </div>
+
+            <div class="dashboard-card danger-card">
+                <h3>Requieren apoyo</h3>
+                <p>{{ students_needing_support }}</p>
+                <span>Estudiantes con bajo nivel</span>
+            </div>
+
+            <div class="dashboard-card warning-card">
+                <h3>Sin notas</h3>
+                <p>{{ no_scores_students }}</p>
+                <span>Estudiantes sin evaluación</span>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total casos</h3>
+                <p>{{ total_cases }}</p>
+                <span>Casos creados</span>
+            </div>
+
+            <div class="dashboard-card warning-card">
+                <h3>Pendientes</h3>
+                <p>{{ pending_cases }}</p>
+                <span>Esperando gestión</span>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Asignados</h3>
+                <p>{{ assigned_cases }}</p>
+                <span>Casos asignados a monitor</span>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Agendados</h3>
+                <p>{{ scheduled_cases }}</p>
+                <span>Casos con cita programada</span>
+            </div>
+
+            <div class="dashboard-card warning-card">
+                <h3>En progreso</h3>
+                <p>{{ in_progress_cases }}</p>
+                <span>Casos activos actualmente</span>
+            </div>
+
+            <div class="dashboard-card success-card">
+                <h3>Completados</h3>
+                <p>{{ completed_cases }}</p>
+                <span>Casos finalizados</span>
+            </div>
+
+            <div class="dashboard-card danger-card">
+                <h3>Cancelados</h3>
+                <p>{{ cancelled_cases }}</p>
+                <span>Casos cancelados</span>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if role == "monitor" %}
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h3>Total estudiantes</h3>
+                <p>{{ total_students }}</p>
+                <span>Estudiantes registrados</span>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Casos asignados</h3>
+                <p>{{ assigned_cases }}</p>
+                <span>Total asignado a ti</span>
+            </div>
+
+            <div class="dashboard-card warning-card">
+                <h3>Seguimientos pendientes</h3>
+                <p>{{ pending_followups }}</p>
+                <span>Necesitan actualización</span>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Agendados</h3>
+                <p>{{ scheduled_cases }}</p>
+                <span>Con fecha de cita</span>
+            </div>
+
+            <div class="dashboard-card warning-card">
+                <h3>En progreso</h3>
+                <p>{{ in_progress_cases }}</p>
+                <span>Actualmente activos</span>
+            </div>
+
+            <div class="dashboard-card success-card">
+                <h3>Completados</h3>
+                <p>{{ completed_cases }}</p>
+                <span>Casos terminados</span>
+            </div>
+
+            <div class="dashboard-card danger-card">
+                <h3>Cancelados</h3>
+                <p>{{ cancelled_cases }}</p>
+                <span>Casos cancelados</span>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if role == "admin" %}
+        <div class="dashboard-grid">
+            <div class="dashboard-card">
+                <h3>Total estudiantes</h3>
+                <p>{{ total_students }}</p>
+                <span>Estudiantes registrados</span>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Total casos</h3>
+                <p>{{ total_cases }}</p>
+                <span>Casos académicos</span>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Profesores</h3>
+                <p>{{ total_teachers }}</p>
+                <span>Usuarios profesores</span>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Monitores</h3>
+                <p>{{ total_monitors }}</p>
+                <span>Usuarios monitores</span>
+            </div>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

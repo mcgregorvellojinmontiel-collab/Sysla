@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="login-page">
+    <div class="login-card">
+        <h2>Registro de usuarios</h2>
+        <p>Crea una cuenta como profesor o monitor.</p>
+
+        <form method="POST" id="registerForm">
+            <label>Nombre completo</label>
+            <input type="text" name="name" required>
+
+            <label>Correo electrónico</label>
+            <input type="email" name="email" required>
+
+            <label>Rol</label>
+            <select name="role" required>
+                <option value="">Seleccione un rol</option>
+                <option value="teacher">Profesor</option>
+                <option value="monitor">Monitor</option>
+            </select>
+
+            <label>Contraseña</label>
+            <input type="password" name="password" id="registerPassword" required>
+
+            <label>Confirmar contraseña</label>
+            <input type="password" name="confirm_password" id="confirmPassword" required>
+
+            <div class="form-actions">
+                <button type="submit">Registrar</button>
+
+                <a href="{{ url_for('login') }}" class="btn-cancel">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

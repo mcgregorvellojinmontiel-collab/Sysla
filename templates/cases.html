@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="cases-layout">
+    <aside class="cases-sidebar">
+        <div class="sidebar-title">
+            <strong>Casos</strong>
+        </div>
+
+        <a 
+            href="{{ url_for('cases', view='active') }}" 
+            class="sidebar-option {% if view == 'active' %}active{% endif %}"
+        >
+            Casos activos
+        </a>
+
+        <a 
+            href="{{ url_for('cases', view='closed') }}" 
+            class="sidebar-option {% if view == 'closed' %}active{% endif %}"
+        >
+            Terminados / cancelados
+        </a>
+
+        <a href="{{ url_for('dashboard') }}" class="sidebar-option">
+            Volver al dashboard
+        </a>
+    </aside>
+
+    <section class="table-section cases-content">
+        <div class="section-header">
+            <div>
+                {% if view == "closed" %}
+                    <h2>Casos terminados o cancelados</h2>
+                    <p>Casos que ya no requieren seguimiento activo.</p>
+                {% else %}
+                    {% if session.get("role") == "monitor" %}
+                        <h2>Mis casos activos</h2>
+                        <p>Casos asignados que requieren seguimiento.</p>
+                    {% else %}
+                        <h2>Casos activos</h2>
+                        <p>Casos pendientes, asignados, agendados o en progreso.</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <input type="text" id="caseSearchInput" placeholder="Buscar caso..." class="search-input">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Estudiante</th>
+                    <th>Semestre</th>
+                    <th>Clase</th>
+                    <th>Promedio</th>
+                    <th>Tipo</th>
+                    <th>Urgencia</th>
+                    <th>Profesor</th>
+                    <th>Monitor</th>
+                    <th>Estado</th>
+                    <th>Fecha cita</th>
+                    <th>Hora</th>
+                    <th>Razón cita</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+
+            <tbody id="casesTable">
+                {% for case in cases %}
+                <tr>
+                    <td>{{ case.student.full_name }}</td>
+                    <td>{{ case.student.semester or "Sin asignar" }}</td>
+                    <td>{{ case.subject }}</td>
+
+                    <td>
+                        {% if case.grade is not none %}
+                            {{ case.grade }}
+                        {% else %}
+                            Sin nota
+                        {% endif %}
+                    </td>
+
+                    <td>{{ case.support_type or "Monitoría" }}</td>
+
+                    <td>
+                        {% if case.urgency_level == "Crítica" %}
+                            <span class="badge danger">Crítica</span>
+                        {% elif case.urgency_level == "Alta" %}
+                            <span class="badge danger">Alta</span>
+                        {% elif case.urgency_level == "Media" %}
+                            <span class="badge warning">Media</span>
+                        {% else %}
+                            <span class="badge success">Baja</span>
+                        {% endif %}
+                    </td>
+
+                    <td>{{ case.teacher.name }}</td>
+
+                    <td>
+                        {% if case.monitor %}
+                            {{ case.monitor.name }}
+                        {% else %}
+                            Sin asignar
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if case.status == "completed" %}
+                            <span class="badge success">Completado</span>
+                        {% elif case.status == "cancelled" %}
+                            <span class="badge danger">Cancelado</span>
+                        {% elif case.status == "scheduled" %}
+                            <span class="badge warning">Agendado</span>
+                        {% elif case.status == "in_progress" %}
+                            <span class="badge warning">En progreso</span>
+                        {% elif case.status == "assigned" %}
+                            <span class="badge warning">Asignado</span>
+                        {% else %}
+                            <span class="badge warning">Pendiente</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if case.support_date %}
+                            {{ case.support_date }}
+                        {% else %}
+                            No agendada
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if case.support_time %}
+                            {{ case.support_time }}
+                        {% else %}
+                            Sin hora
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if case.appointment_reason %}
+                            {{ case.appointment_reason }}
+                        {% else %}
+                            Sin registrar
+                        {% endif %}
+                    </td>
+
+                    <td class="actions-cell">
+                        {% if session.get("role") == "monitor" %}
+                            <a class="btn-small" href="{{ url_for('update_case', case_id=case.id) }}">
+                                Actualizar
+                            </a>
+
+                        {% elif session.get("role") == "teacher" %}
+                            <a class="btn-small" href="{{ url_for('update_case', case_id=case.id) }}">
+                                Revisar
+                            </a>
+
+                            <form 
+                                method="POST" 
+                                action="{{ url_for('delete_case', case_id=case.id) }}" 
+                                class="inline-form"
+                                onsubmit="return confirm('¿Seguro que deseas eliminar este caso?');"
+                            >
+                                <button type="submit" class="btn-small danger-button">
+                                    Eliminar
+                                </button>
+                            </form>
+
+                        {% else %}
+                            <span class="muted">Sin acción</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="13" class="empty-row">
+                        No hay casos en esta sección.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</section>
+{% endblock %}

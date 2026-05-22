@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="dashboard-header">
+        <div>
+            <h2>Bienvenido, {{ session.get("user_name") }}</h2>
+            <p>
+                Rol:
+                <strong>
+                    {% if session.get("role") == "teacher" %}
+                        Profesor
+                    {% elif session.get("role") == "monitor" %}
+                        Monitor
+                    {% else %}
+                        {{ session.get("role") }}
+                    {% endif %}
+                </strong>
+            </p>
+        </div>
+    </div>
+
+    <div class="dashboard-menu-grid square-menu">
+        <a href="{{ url_for('classes') }}" class="dashboard-menu-card square-card">
+            <h3>Clases</h3>
+
+            <div class="dashboard-card-image">
+                <img 
+                    src="{{ url_for('static', filename='css/clases.SVG') }}" 
+                    alt="Clases"
+                >
+            </div>
+
+            <p>Ver clases registradas y estudiantes asociados.</p>
+        </a>
+
+        <a href="{{ url_for('cases') }}" class="dashboard-menu-card square-card">
+            <h3>Casos</h3>
+
+            <div class="dashboard-card-image">
+                <img 
+                    src="{{ url_for('static', filename='css/casos.SVG') }}" 
+                    alt="Casos"
+                >
+            </div>
+
+            <p>Consultar casos activos, terminados o cancelados.</p>
+        </a>
+
+        <a href="{{ url_for('users') }}" class="dashboard-menu-card square-card">
+            <h3>Usuarios</h3>
+
+            <div class="dashboard-card-image">
+                <img 
+                    src="{{ url_for('static', filename='css/usuarios.SVG') }}" 
+                    alt="Usuarios"
+                >
+            </div>
+
+            <p>Ver profesores y monitores registrados.</p>
+        </a>
+
+        <a href="{{ url_for('stats') }}" class="dashboard-menu-card square-card">
+            <h3>Resumen</h3>
+
+            <div class="dashboard-card-image">
+                <img 
+                    src="{{ url_for('static', filename='css/resumen.SVG') }}" 
+                    alt="Resumen"
+                >
+            </div>
+
+            <p>Ver indicadores generales del sistema.</p>
+        </a>
+
+        {% if session.get("role") in ["teacher", "monitor"] %}
+        <a href="{{ url_for('students') }}" class="dashboard-menu-card square-card">
+            <h3>Estudiantes</h3>
+
+            <div class="dashboard-card-image">
+                <img 
+                    src="{{ url_for('static', filename='css/estudiantes.SVG') }}" 
+                    alt="Estudiantes"
+                >
+            </div>
+
+            <p>Consultar estudiantes, revisar estado académico y crear casos.</p>
+        </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

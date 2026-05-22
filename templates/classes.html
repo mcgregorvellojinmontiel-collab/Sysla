@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="table-section">
+    <div class="section-header">
+        <div>
+            <h2>Clases</h2>
+            <p>Listado de clases registradas y estudiantes asociados.</p>
+        </div>
+    </div>
+
+    <input type="text" id="classSearchInput" placeholder="Buscar clase..." class="search-input">
+
+    <table>
+        <thead>
+            <tr>
+                <th>Código de clase</th>
+                <th>Nombre de clase</th>
+                <th>Cantidad de estudiantes</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+
+        <tbody id="classesTable">
+            {% for class_item in classes %}
+            <tr>
+                <td>{{ class_item.class_code }}</td>
+                <td>{{ class_item.class_name }}</td>
+                <td>{{ class_item.students|length }}</td>
+                <td>
+                    <a class="btn-small" href="{{ url_for('class_detail', class_code=class_item.class_code) }}">
+                        Ver estudiantes
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" class="empty-row">
+                    No hay clases registradas.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}
